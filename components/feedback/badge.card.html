@@ -1,0 +1,33 @@
+<!-- @dsCard group="Components" viewport="700x160" name="Badge" -->
+<link rel="stylesheet" href="../../styles.css">
+<script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<script src="../../_ds_bundle.js"></script>
+<div id="root" style="padding:20px;background:#fff;font-family:var(--font-sans)"></div>
+<script type="text/plain" id="app-src">
+  const { Badge } = window.SmalltalkDS;
+  function Demo() {
+    return (
+      <div style={{display:"flex", flexDirection:"column", gap:12}}>
+        <div style={{display:"flex", gap:8}}>
+          <Badge tone="blue">활성</Badge>
+          <Badge tone="gray">비활성</Badge>
+          <Badge tone="green">ISA</Badge>
+          <Badge tone="purple">연금저축</Badge>
+          <Badge tone="orange">IRP</Badge>
+        </div>
+        <div style={{display:"flex", gap:8}}>
+          <Badge tone="blue" pill={false}>#일상</Badge>
+          <Badge tone="blue" pill={false}>#질문</Badge>
+        </div>
+      </div>
+    );
+  }
+  ReactDOM.createRoot(document.getElementById("root")).render(React.createElement(Demo));
+</script>
+<script>
+  var src = document.getElementById('app-src').textContent;
+  var out = Babel.transform(src, { presets: [['react', { runtime: 'classic' }]] }).code;
+  (0, eval)(out);
+</script>

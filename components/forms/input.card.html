@@ -1,0 +1,26 @@
+<!-- @dsCard group="Components" viewport="700x220" name="Input" -->
+<link rel="stylesheet" href="../../styles.css">
+<script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<script src="../../_ds_bundle.js"></script>
+<div id="root" style="padding:20px;background:#fff;font-family:var(--font-sans);max-width:640px"></div>
+<script type="text/plain" id="app-src">
+  const { Input } = window.SmalltalkDS;
+  function Demo() {
+    return (
+      <div style={{display:"grid", gridTemplateColumns:"1fr 1fr", gap:16}}>
+        <Input label="아이디" placeholder="영문 소문자 시작, 4~15자" />
+        <Input label="비밀번호" type="password" placeholder="4~20자, 2종류 이상 혼합" />
+        <Input label="비밀번호 확인" type="password" error="비밀번호가 일치하지 않습니다" />
+        <Input label="닉네임" value="스몰토커" onChange={()=>{}} />
+      </div>
+    );
+  }
+  ReactDOM.createRoot(document.getElementById("root")).render(React.createElement(Demo));
+</script>
+<script>
+  var src = document.getElementById('app-src').textContent;
+  var out = Babel.transform(src, { presets: [['react', { runtime: 'classic' }]] }).code;
+  (0, eval)(out);
+</script>

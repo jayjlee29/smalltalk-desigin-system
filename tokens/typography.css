@@ -1,0 +1,19 @@
+/* Smalltalk Community — type tokens
+   Fonts: Geist (UI/body) + Geist Mono (tabular numbers: prices, quantities).
+   Geist ships on Google Fonts; loaded via styles.css import. */
+
+:root {
+  --font-sans: 'Geist', system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: 'Geist Mono', ui-monospace, "SFMono-Regular", Menlo, monospace;
+
+  /* Tailwind default type scale used throughout the app */
+  --text-xs: 12px;    --leading-xs: 16px;
+  --text-sm: 14px;    --leading-sm: 20px;
+  --text-base: 16px;  --leading-base: 24px;
+  --text-lg: 18px;    --leading-lg: 28px;
+  --text-2xl: 24px;   --leading-2xl: 32px;
+
+  --font-medium: 500;
+  --font-semibold: 600;
+  --font-bold: 700;
+}

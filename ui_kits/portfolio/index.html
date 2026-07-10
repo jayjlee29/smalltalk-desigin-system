@@ -1,0 +1,298 @@
+<!-- @dsCard group="Portfolio" viewport="800x760" subtitle="Summary, account cards, holdings table, trend chart" name="Portfolio Dashboard" -->
+<!-- @startingPoint section="Portfolio" subtitle="Stock portfolio dashboard w/ chart + holdings" viewport="800x760" -->
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>Portfolio — UI Kit</title>
+<link rel="stylesheet" href="../../styles.css">
+<script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<style>
+  body { margin: 0; background: #fff; color: var(--gray-900); }
+  * { box-sizing: border-box; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/plain" id="app-src">
+const ACCOUNTS = [
+  { account: { id: "a1", brokerName: "미래에셋증권", accountAlias: "메인 ISA", accountType: "ISA" },
+    latestSnapshot: { snapshotAt: "2026-07-09", cashBalance: 2150000, totalValuation: 84300000 } },
+  { account: { id: "a2", brokerName: "한국투자증권", accountAlias: "연금저축", accountType: "연금저축" },
+    latestSnapshot: { snapshotAt: "2026-07-09", cashBalance: 540000, totalValuation: 41200000 } },
+  { account: { id: "a3", brokerName: "삼성증권", accountAlias: "퇴직연금 IRP", accountType: "IRP" },
+    latestSnapshot: { snapshotAt: "2026-07-08", cashBalance: 1020000, totalValuation: 29800000 } },
+  { account: { id: "a4", brokerName: "키움증권", accountAlias: null, accountType: "일반" },
+    latestSnapshot: null },
+];
+
+const PORTFOLIO_SUMMARY = {
+  totalValuation: 155300000,
+  totalCashBalance: 3710000,
+  accountSummaries: ACCOUNTS,
+};
+
+const HOLDINGS = [
+  { id: "h1", stockName: "삼성전자", ticker: "005930", market: "KOSPI", quantity: 120, avgBuyPrice: 68000, currentPrice: 76400, valuation: 9168000, returnRate: 1.1235 },
+  { id: "h2", stockName: "카카오", ticker: "035720", market: "KOSPI", quantity: 40, avgBuyPrice: 52000, currentPrice: 49900, valuation: 1996000, returnRate: 0.9596 },
+  { id: "h3", stockName: "NAVER", ticker: "035420", market: "KOSPI", quantity: 15, avgBuyPrice: 210000, currentPrice: 228500, valuation: 3427500, returnRate: 1.0881 },
+  { id: "h4", stockName: "SK하이닉스", ticker: "000660", market: "KOSPI", quantity: 25, avgBuyPrice: 175000, currentPrice: 199000, valuation: 4975000, returnRate: 1.1371 },
+];
+
+const HISTORY = [
+  { date: "2026-01-15", totalValuation: 128000000 },
+  { date: "2026-02-15", totalValuation: 132500000 },
+  { date: "2026-03-15", totalValuation: 137100000 },
+  { date: "2026-04-15", totalValuation: 141900000 },
+  { date: "2026-05-15", totalValuation: 146200000 },
+  { date: "2026-06-15", totalValuation: 150800000 },
+  { date: "2026-07-09", totalValuation: 155300000 },
+];
+
+function formatKrw(amount) {
+  if (amount >= 100000000) return (amount / 100000000).toFixed(2) + "억";
+  if (amount >= 10000) return (amount / 10000).toFixed(0) + "만";
+  return amount.toLocaleString("ko-KR");
+}
+
+const ACCOUNT_TYPE_COLORS = {
+  ISA: { bg: "var(--green-100)", fg: "var(--green-700)" },
+  연금저축: { bg: "var(--purple-100)", fg: "var(--purple-700)" },
+  IRP: { bg: "var(--orange-100)", fg: "var(--orange-700)" },
+  일반: { bg: "var(--gray-100)", fg: "var(--gray-600)" },
+};
+
+function AccountTypeBadge({ type }) {
+  const c = ACCOUNT_TYPE_COLORS[type] ?? ACCOUNT_TYPE_COLORS["일반"];
+  return (
+    <span style={{ fontSize: 12, padding: "2px 6px", borderRadius: 4, fontWeight: 500, background: c.bg, color: c.fg }}>
+      {type}
+    </span>
+  );
+}
+
+function formatSnapshotDate(dateStr) {
+  const d = new Date(dateStr);
+  return d.getFullYear() + "." + String(d.getMonth() + 1).padStart(2, "0") + "." + String(d.getDate()).padStart(2, "0");
+}
+
+function PortfolioSummaryCard({ data, onOpenAccount }) {
+  const [hoverId, setHoverId] = React.useState(null);
+  const holdingsTotal = data.totalValuation - data.totalCashBalance;
+
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: 24, fontFamily: "var(--font-sans)" }}>
+      <div style={{ border: "1px solid var(--gray-200)", borderRadius: 12, padding: 24, background: "linear-gradient(to bottom right, var(--gray-50), #fff)" }}>
+        <h2 style={{ fontSize: 14, fontWeight: 500, color: "var(--gray-500)", margin: "0 0 16px" }}>포트폴리오 전체</h2>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 16 }}>
+          <div><p style={{ fontSize: 12, color: "var(--gray-400)", margin: 0 }}>총 평가금액</p><p style={{ fontSize: 18, fontWeight: 700, margin: "2px 0 0" }}>{formatKrw(data.totalValuation)}원</p></div>
+          <div><p style={{ fontSize: 12, color: "var(--gray-400)", margin: 0 }}>보유 주식</p><p style={{ fontSize: 18, fontWeight: 700, margin: "2px 0 0" }}>{formatKrw(holdingsTotal)}원</p></div>
+          <div><p style={{ fontSize: 12, color: "var(--gray-400)", margin: 0 }}>예수금</p><p style={{ fontSize: 18, fontWeight: 700, margin: "2px 0 0" }}>{formatKrw(data.totalCashBalance)}원</p></div>
+        </div>
+      </div>
+
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 16 }}>
+        {data.accountSummaries.map(({ account, latestSnapshot }) => {
+          const hover = hoverId === account.id;
+          return (
+            <div
+              key={account.id}
+              onMouseEnter={() => setHoverId(account.id)}
+              onMouseLeave={() => setHoverId(null)}
+              onClick={() => onOpenAccount && onOpenAccount(account.id)}
+              style={{
+                border: `1px solid ${hover ? "var(--blue-400)" : "var(--gray-200)"}`,
+                borderRadius: 12, padding: 20, cursor: "pointer",
+                boxShadow: hover ? "var(--shadow-sm)" : "none",
+                transition: "var(--transition-default)",
+              }}
+            >
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 12 }}>
+                <div>
+                  <p style={{ margin: 0, fontWeight: 600, color: hover ? "var(--blue-600)" : "var(--gray-900)", fontSize: 14 }}>{account.accountAlias ?? account.brokerName}</p>
+                  <p style={{ margin: "2px 0 0", fontSize: 12, color: "var(--gray-400)" }}>{account.brokerName}</p>
+                </div>
+                <AccountTypeBadge type={account.accountType} />
+              </div>
+              {latestSnapshot ? (
+                <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", fontSize: 14 }}>
+                    <span style={{ color: "var(--gray-400)" }}>평가금액</span>
+                    <span style={{ fontWeight: 600, fontFamily: "var(--font-mono)" }}>{formatKrw(latestSnapshot.totalValuation)}원</span>
+                  </div>
+                  <div style={{ display: "flex", justifyContent: "space-between", fontSize: 14 }}>
+                    <span style={{ color: "var(--gray-400)" }}>예수금</span>
+                    <span style={{ fontFamily: "var(--font-mono)" }}>{formatKrw(latestSnapshot.cashBalance)}원</span>
+                  </div>
+                  <p style={{ fontSize: 12, color: "var(--gray-300)", margin: "8px 0 0" }}>기준일 {formatSnapshotDate(latestSnapshot.snapshotAt)}</p>
+                </div>
+              ) : (
+                <p style={{ fontSize: 14, color: "var(--gray-300)", margin: 0 }}>스냅샷 없음</p>
+              )}
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+function formatKrwFull(amount) {
+  if (amount >= 100000000) return (amount / 100000000).toFixed(2) + "억원";
+  if (amount >= 10000) return (amount / 10000).toFixed(0) + "만원";
+  return amount.toLocaleString("ko-KR") + "원";
+}
+
+function ReturnRate({ rate }) {
+  const pct = ((rate - 1) * 100).toFixed(2);
+  const pos = rate >= 1;
+  return (
+    <span style={{ fontWeight: 600, color: pos ? "var(--red-500)" : "var(--blue-500)" }}>
+      {pos ? "+" : ""}{pct}%
+    </span>
+  );
+}
+
+function SnapshotHoldingsTable({ holdings }) {
+  return (
+    <div style={{ border: "1px solid var(--gray-200)", borderRadius: 12, overflow: "hidden", fontFamily: "var(--font-sans)" }}>
+      <table style={{ width: "100%", fontSize: 14, borderCollapse: "collapse" }}>
+        <thead>
+          <tr style={{ background: "var(--gray-50)", fontSize: 12, color: "var(--gray-500)", borderBottom: "1px solid var(--gray-200)" }}>
+            <th style={{ textAlign: "left", padding: "10px 16px", fontWeight: 400 }}>종목</th>
+            <th style={{ textAlign: "right", padding: "10px 16px", fontWeight: 400, width: 80 }}>수량</th>
+            <th style={{ textAlign: "right", padding: "10px 16px", fontWeight: 400, width: 112 }}>평단가</th>
+            <th style={{ textAlign: "right", padding: "10px 16px", fontWeight: 400, width: 112 }}>현재가</th>
+            <th style={{ textAlign: "right", padding: "10px 16px", fontWeight: 400, width: 128 }}>평가금액</th>
+            <th style={{ textAlign: "right", padding: "10px 16px", fontWeight: 400, width: 96 }}>수익률</th>
+          </tr>
+        </thead>
+        <tbody>
+          {holdings.map((h, i) => (
+            <tr key={h.id} style={{ borderBottom: i === holdings.length - 1 ? "none" : "1px solid var(--gray-200)" }}>
+              <td style={{ padding: "10px 16px" }}>
+                <p style={{ margin: 0, fontWeight: 500 }}>{h.stockName}</p>
+                <p style={{ margin: "2px 0 0", fontSize: 12, color: "var(--gray-400)" }}>{h.ticker} · {h.market}</p>
+              </td>
+              <td style={{ padding: "10px 16px", textAlign: "right", fontFamily: "var(--font-mono)" }}>{h.quantity.toLocaleString()}</td>
+              <td style={{ padding: "10px 16px", textAlign: "right", fontFamily: "var(--font-mono)" }}>{formatKrwFull(h.avgBuyPrice)}</td>
+              <td style={{ padding: "10px 16px", textAlign: "right", fontFamily: "var(--font-mono)" }}>{formatKrwFull(h.currentPrice)}</td>
+              <td style={{ padding: "10px 16px", textAlign: "right", fontFamily: "var(--font-mono)", fontWeight: 500 }}>{formatKrwFull(h.valuation)}</td>
+              <td style={{ padding: "10px 16px", textAlign: "right" }}><ReturnRate rate={h.returnRate} /></td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
+function PortfolioTrendChart({ data }) {
+  if (!data.length) return <p style={{ fontSize: 14, color: "var(--gray-400)", textAlign: "center", padding: "32px 0" }}>스냅샷 데이터가 없습니다.</p>;
+
+  const fmt = (v) => (v >= 100000000 ? (v / 100000000).toFixed(1) + "억" : (v / 10000).toFixed(0) + "만");
+
+  const W = 680, H = 260;
+  const padL = 56, padR = 20, padT = 16, padB = 28;
+  const plotW = W - padL - padR, plotH = H - padT - padB;
+
+  const values = data.map((d) => d.totalValuation);
+  const minV = Math.min(...values) * 0.97;
+  const maxV = Math.max(...values) * 1.03;
+  const xFor = (i) => padL + (data.length === 1 ? plotW / 2 : (i / (data.length - 1)) * plotW);
+  const yFor = (v) => padT + plotH - ((v - minV) / (maxV - minV)) * plotH;
+
+  const points = data.map((d, i) => [xFor(i), yFor(d.totalValuation)]);
+  const linePath = points.map((p, i) => (i === 0 ? "M" : "L") + p[0].toFixed(1) + "," + p[1].toFixed(1)).join(" ");
+
+  const gridLines = [0, 0.25, 0.5, 0.75, 1].map((t) => padT + plotH * t);
+
+  const [hover, setHover] = React.useState(null);
+
+  return (
+    <div style={{ fontFamily: "var(--font-sans)" }}>
+      <svg
+        viewBox={`0 0 ${W} ${H}`}
+        style={{ width: "100%", height: 260, display: "block" }}
+        onMouseLeave={() => setHover(null)}
+      >
+        {gridLines.map((y, i) => (
+          <line key={i} x1={padL} y1={y} x2={W - padR} y2={y} stroke="#f0f0f0" strokeWidth="1" />
+        ))}
+        {[0, 0.25, 0.5, 0.75, 1].map((t, i) => (
+          <text key={i} x={padL - 8} y={padT + plotH * t + 4} textAnchor="end" fontSize="11" fill="var(--gray-400)">
+            {fmt(maxV - (maxV - minV) * t)}
+          </text>
+        ))}
+        {data.map((d, i) => (
+          <text key={i} x={xFor(i)} y={H - 8} textAnchor="middle" fontSize="11" fill="var(--gray-400)">
+            {d.date.slice(5).replace("-", "/")}
+          </text>
+        ))}
+        <path d={linePath} fill="none" stroke="var(--chart-line-total)" strokeWidth="2" />
+        {points.map(([x, y], i) => (
+          <circle
+            key={i} cx={x} cy={y} r={hover === i ? 4 : 3}
+            fill="var(--chart-line-total)"
+            onMouseEnter={() => setHover(i)}
+            style={{ cursor: "pointer" }}
+          />
+        ))}
+        {hover != null && (
+          <g>
+            <rect x={points[hover][0] - 46} y={points[hover][1] - 34} width="92" height="24" rx="4" fill="var(--gray-900)" />
+            <text x={points[hover][0]} y={points[hover][1] - 18} textAnchor="middle" fontSize="11" fill="#fff">
+              {fmt(data[hover].totalValuation)}원
+            </text>
+          </g>
+        )}
+      </svg>
+      <div style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 12, color: "var(--gray-500)", marginTop: 4 }}>
+        <span style={{ width: 10, height: 2, background: "var(--chart-line-total)", display: "inline-block" }} /> 전체
+      </div>
+    </div>
+  );
+}
+
+function App() {
+  return (
+    <div style={{ fontFamily: "var(--font-sans)" }}>
+      <header style={{ borderBottom: "1px solid var(--gray-200)", height: 56, display: "flex", alignItems: "center" }}>
+        <div style={{ maxWidth: 768, margin: "0 auto", width: "100%", padding: "0 16px", display: "flex", alignItems: "center", gap: 16 }}>
+          <span style={{ fontSize: 16, fontWeight: 700 }}>Smalltalk Community</span>
+          <span style={{ fontSize: 14, color: "var(--blue-600)" }}>포트폴리오</span>
+        </div>
+      </header>
+      <main style={{ maxWidth: 768, margin: "0 auto", padding: "32px 16px" }}>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 24 }}>
+          <h1 style={{ fontSize: 24, fontWeight: 700, margin: 0 }}>포트폴리오</h1>
+          <span style={{ fontSize: 12, padding: "6px 12px", border: "1px solid var(--gray-200)", borderRadius: 8, color: "var(--gray-500)" }}>종목 마스터 관리</span>
+        </div>
+
+        <PortfolioSummaryCard data={PORTFOLIO_SUMMARY} />
+
+        <div style={{ border: "1px solid var(--gray-200)", borderRadius: 12, padding: 20, marginTop: 32 }}>
+          <h2 style={{ fontSize: 16, fontWeight: 600, marginBottom: 16 }}>자산 트렌드</h2>
+          <PortfolioTrendChart data={HISTORY} />
+        </div>
+
+        <div style={{ marginTop: 32 }}>
+          <h2 style={{ fontSize: 16, fontWeight: 600, marginBottom: 16 }}>보유 종목 — 메인 ISA</h2>
+          <SnapshotHoldingsTable holdings={HOLDINGS} />
+        </div>
+      </main>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(React.createElement(App));
+</script>
+<script>
+  var src = document.getElementById('app-src').textContent;
+  var out = Babel.transform(src, { presets: [['react', { runtime: 'classic' }]] }).code;
+  (0, eval)(out);
+</script>
+</body>
+</html>

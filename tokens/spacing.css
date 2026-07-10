@@ -1,0 +1,21 @@
+/* Smalltalk Community — spacing & sizing tokens (Tailwind default scale, as used in-app) */
+
+:root {
+  --space-1: 4px;
+  --space-1_5: 6px;
+  --space-2: 8px;
+  --space-2_5: 10px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-16: 64px;
+  --space-20: 80px;
+
+  /* Layout widths */
+  --content-max-width: 768px;  /* max-w-3xl: header + main content column */
+  --form-max-width: 384px;     /* max-w-sm: login/register forms */
+  --header-height: 56px;       /* h-14 */
+}

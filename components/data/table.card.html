@@ -1,0 +1,35 @@
+<!-- @dsCard group="Components" viewport="700x220" name="Table" -->
+<link rel="stylesheet" href="../../styles.css">
+<script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<script src="../../_ds_bundle.js"></script>
+<div id="root" style="padding:20px;background:#fff;font-family:var(--font-sans)"></div>
+<script type="text/plain" id="app-src">
+  const { Table } = window.SmalltalkDS;
+  const rows = [
+    { id: 1, name: "삼성전자", qty: 120, value: "1,845만원", ret: "+12.40%", pos: true },
+    { id: 2, name: "카카오", qty: 40, value: "312만원", ret: "-4.10%", pos: false },
+  ];
+  function Demo() {
+    return (
+      <Table
+        rowKey="id"
+        rows={rows}
+        columns={[
+          { key: "name", label: "종목" },
+          { key: "qty", label: "수량", align: "right", mono: true },
+          { key: "value", label: "평가금액", align: "right", mono: true, width: 140 },
+          { key: "ret", label: "수익률", align: "right", mono: true,
+            render: (r) => <span style={{color: r.pos ? "var(--red-500)" : "var(--blue-500)", fontWeight: 600}}>{r.ret}</span> },
+        ]}
+      />
+    );
+  }
+  ReactDOM.createRoot(document.getElementById("root")).render(React.createElement(Demo));
+</script>
+<script>
+  var src = document.getElementById('app-src').textContent;
+  var out = Babel.transform(src, { presets: [['react', { runtime: 'classic' }]] }).code;
+  (0, eval)(out);
+</script>

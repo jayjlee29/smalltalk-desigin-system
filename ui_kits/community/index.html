@@ -1,0 +1,443 @@
+<!-- @dsCard group="Community" viewport="800x600" subtitle="Board list → article list → detail, login/register" name="Community Board" -->
+<!-- @startingPoint section="Community" subtitle="Full board+article+comments+auth flow" viewport="800x600" -->
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>Smalltalk Community — UI Kit</title>
+<link rel="stylesheet" href="../../styles.css">
+<script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<style>
+  body { margin: 0; background: #fff; color: var(--gray-900); }
+  * { box-sizing: border-box; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/plain" id="app-src">
+const BOARDS = [
+  { id: "1", name: "공지사항", description: "커뮤니티 공지사항입니다", enabled: true },
+  { id: "2", name: "자유게시판", description: "자유롭게 이야기해요", enabled: true },
+  { id: "3", name: "질문답변", description: "궁금한 걸 물어보세요", enabled: true },
+  { id: "4", name: "포트폴리오 인증", description: "투자 인증 게시판", enabled: true },
+  { id: "5", name: "종료된 게시판", description: null, enabled: false },
+];
+
+const ARTICLES = [
+  { id: "101", title: "다들 오늘 시장 어떻게 보세요", author: { nickname: "보통사람" }, articleStatus: "게시중", createdAt: "2026-07-10T09:12:00" },
+  { id: "102", title: "삼성전자 실적 발표 정리", author: { nickname: "차트요정" }, articleStatus: "게시중", createdAt: "2026-07-09T21:03:00" },
+  { id: "103", title: "장기투자 vs 단타, 여러분의 선택은?", author: { nickname: "느긋한투자자" }, articleStatus: "게시중", createdAt: "2026-07-09T14:44:00" },
+  { id: "104", title: "포트폴리오 기능 써보신 분?", author: { nickname: "보통사람" }, articleStatus: "게시중", createdAt: "2026-07-08T11:20:00" },
+];
+
+const ARTICLE_DETAIL = {
+  id: "101",
+  boardId: "2",
+  title: "다들 오늘 시장 어떻게 보세요",
+  contents: "오늘 변동성이 좀 크네요. 다들 포트폴리오는 잘 방어하고 계신가요?\n\n저는 일단 현금 비중을 좀 늘려뒀습니다.",
+  author: { username: "user2", nickname: "보통사람" },
+  articleStatus: "게시중",
+  tagList: ["시황", "잡담"],
+  createdAt: "2026-07-10T09:12:00",
+  updatedAt: null,
+};
+
+const COMMENTS = [
+  {
+    id: "c1", parentId: null, comment: "저도 현금 비중 늘리는 중이에요", createdBy: "차트요정",
+    deleted: false, createdAt: "2026-07-10T09:30:00", updatedAt: null,
+    replies: [
+      { id: "c1r1", parentId: "c1", comment: "좋은 전략이네요!", createdBy: "느긋한투자자", deleted: false, createdAt: "2026-07-10T09:40:00", updatedAt: null, replies: [] },
+    ],
+  },
+  { id: "c2", parentId: null, comment: "[삭제된 댓글입니다]", createdBy: "익명", deleted: true, createdAt: "2026-07-10T09:15:00", updatedAt: null, replies: [] },
+];
+
+function Header({ page, setPage, loggedIn, setLoggedIn }) {
+  const [hoverMy, setHoverMy] = React.useState(false);
+  const [hoverLogout, setHoverLogout] = React.useState(false);
+  const [hoverLogin, setHoverLogin] = React.useState(false);
+
+  const linkBtn = (hover) => ({
+    fontSize: 14,
+    padding: "6px 12px",
+    borderRadius: 8,
+    border: "1px solid var(--gray-200)",
+    background: hover ? "var(--gray-50)" : "var(--white)",
+    color: "var(--gray-700)",
+    cursor: "pointer",
+    transition: "var(--transition-default)",
+  });
+
+  return (
+    <header style={{ borderBottom: "1px solid var(--gray-200)", background: "#fff", position: "sticky", top: 0, zIndex: 10 }}>
+      <div style={{ maxWidth: 768, margin: "0 auto", padding: "0 16px", height: 56, display: "flex", alignItems: "center", justifyContent: "space-between", fontFamily: "var(--font-sans)" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
+          <span onClick={() => setPage("boards")} style={{ fontSize: 16, fontWeight: 700, color: "var(--gray-900)", cursor: "pointer" }}>Smalltalk Community</span>
+          <span onClick={() => setPage("portfolio")} style={{ fontSize: 14, color: "var(--gray-500)", cursor: "pointer" }}>포트폴리오</span>
+        </div>
+        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+          {loggedIn ? (
+            <>
+              <span style={{ fontSize: 14, color: "var(--gray-600)" }}>
+                <b style={{ fontWeight: 500 }}>보통사람</b>
+                <span style={{ color: "var(--gray-400)", marginLeft: 4 }}>(user1)</span>
+              </span>
+              <button style={linkBtn(hoverMy)} onMouseEnter={()=>setHoverMy(true)} onMouseLeave={()=>setHoverMy(false)} onClick={() => setPage("my-articles")}>내 글</button>
+              <button style={linkBtn(hoverLogout)} onMouseEnter={()=>setHoverLogout(true)} onMouseLeave={()=>setHoverLogout(false)} onClick={() => setLoggedIn(false)}>로그아웃</button>
+            </>
+          ) : (
+            <>
+              <button style={linkBtn(hoverLogin)} onMouseEnter={()=>setHoverLogin(true)} onMouseLeave={()=>setHoverLogin(false)} onClick={() => setPage("login")}>로그인</button>
+              <button style={{ fontSize: 14, padding: "6px 12px", borderRadius: 8, border: "none", background: "var(--blue-600)", color: "#fff", cursor: "pointer" }} onClick={() => setPage("register")}>회원가입</button>
+            </>
+          )}
+        </div>
+      </div>
+    </header>
+  );
+}
+
+function BoardRow({ board, onOpen }) {
+  const [hover, setHover] = React.useState(false);
+  const disabled = !board.enabled;
+  return (
+    <li style={{ listStyle: "none" }}>
+      <div
+        onClick={() => !disabled && onOpen(board.id)}
+        onMouseEnter={() => setHover(true)}
+        onMouseLeave={() => setHover(false)}
+        style={{
+          display: "flex", alignItems: "center", justifyContent: "space-between",
+          padding: "16px 20px", cursor: disabled ? "default" : "pointer",
+          opacity: disabled ? 0.5 : 1, pointerEvents: disabled ? "none" : "auto",
+          background: hover ? "var(--blue-600)" : "transparent",
+          transition: "var(--transition-default)",
+        }}
+      >
+        <div>
+          <p style={{ margin: 0, fontWeight: 500, fontSize: 14, color: hover ? "#fff" : "var(--gray-900)" }}>{board.name}</p>
+          {board.description && (
+            <p style={{ margin: "2px 0 0", fontSize: 13, color: hover ? "var(--blue-100)" : "var(--gray-500)" }}>{board.description}</p>
+          )}
+        </div>
+        <span style={{
+          fontSize: 11, padding: "4px 10px", borderRadius: 9999, fontWeight: 500,
+          background: board.enabled ? (hover ? "#fff" : "var(--blue-50)") : (hover ? "var(--blue-500)" : "var(--gray-100)"),
+          color: board.enabled ? "var(--blue-600)" : (hover ? "var(--blue-100)" : "var(--gray-400)"),
+        }}>
+          {board.enabled ? "활성" : "비활성"}
+        </span>
+      </div>
+    </li>
+  );
+}
+
+function BoardList({ onOpenBoard }) {
+  const [mode, setMode] = React.useState("page");
+  return (
+    <div style={{ fontFamily: "var(--font-sans)" }}>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 24 }}>
+        <h1 style={{ fontSize: 24, fontWeight: 700, color: "var(--gray-900)", margin: 0 }}>게시판</h1>
+        <div style={{ display: "flex", border: "1px solid var(--gray-200)", borderRadius: 8, overflow: "hidden", fontSize: 14 }}>
+          <button onClick={() => setMode("page")} style={{ padding: "6px 12px", border: "none", cursor: "pointer", background: mode === "page" ? "var(--blue-600)" : "#fff", color: mode === "page" ? "#fff" : "var(--gray-600)" }}>페이지 네비게이션</button>
+          <button onClick={() => setMode("scroll")} style={{ padding: "6px 12px", borderLeft: "1px solid var(--gray-200)", cursor: "pointer", background: mode === "scroll" ? "var(--blue-600)" : "#fff", color: mode === "scroll" ? "#fff" : "var(--gray-600)" }}>스크롤 페이징</button>
+        </div>
+      </div>
+      <ul style={{ margin: 0, padding: 0, border: "1px solid var(--gray-200)", borderRadius: 8, overflow: "hidden" }}>
+        {BOARDS.map((b, i) => (
+          <div key={b.id} style={{ borderBottom: i === BOARDS.length - 1 ? "none" : "1px solid var(--gray-200)" }}>
+            <BoardRow board={b} onOpen={onOpenBoard} />
+          </div>
+        ))}
+      </ul>
+      {mode === "scroll" && (
+        <div style={{ height: 40, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, color: "var(--gray-400)" }}>
+          마지막 게시판입니다
+        </div>
+      )}
+      {mode === "page" && (
+        <div style={{ display: "flex", justifyContent: "center", gap: 4, marginTop: 24 }}>
+          {[1, 2, 3].map((p) => (
+            <button key={p} style={{
+              width: 36, height: 36, borderRadius: 8, fontSize: 14, fontWeight: 500, cursor: "pointer",
+              border: p === 1 ? "none" : "1px solid var(--gray-200)",
+              background: p === 1 ? "var(--blue-600)" : "#fff",
+              color: p === 1 ? "#fff" : "var(--gray-600)",
+            }}>{p}</button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function BoardDetail({ boardId, onOpenArticle, onBack, loggedIn, onWrite }) {
+  const board = BOARDS.find((b) => b.id === boardId) ?? BOARDS[1];
+  const [hoverRow, setHoverRow] = React.useState(null);
+
+  return (
+    <div style={{ fontFamily: "var(--font-sans)" }}>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 24 }}>
+        <div>
+          <span onClick={onBack} style={{ fontSize: 14, color: "var(--gray-400)", cursor: "pointer" }}>← 게시판 목록</span>
+          <h1 style={{ fontSize: 24, fontWeight: 700, margin: "4px 0 0", color: "var(--gray-900)" }}>{board.name}</h1>
+        </div>
+        <button onClick={onWrite} style={{ padding: "8px 16px", background: "var(--blue-600)", color: "#fff", fontSize: 14, fontWeight: 500, border: "none", borderRadius: 8, cursor: "pointer" }}>글쓰기</button>
+      </div>
+
+      <div style={{ border: "1px solid var(--gray-200)", borderRadius: 8, overflow: "hidden" }}>
+        {ARTICLES.map((a, i) => {
+          const hover = hoverRow === a.id;
+          return (
+            <div
+              key={a.id}
+              onMouseEnter={() => setHoverRow(a.id)}
+              onMouseLeave={() => setHoverRow(null)}
+              onClick={() => onOpenArticle(a.id)}
+              style={{
+                display: "flex", alignItems: "center", justifyContent: "space-between",
+                padding: "16px 20px", cursor: "pointer",
+                borderBottom: i === ARTICLES.length - 1 ? "none" : "1px solid var(--gray-200)",
+                background: hover ? "var(--blue-600)" : "transparent",
+                transition: "var(--transition-default)",
+              }}
+            >
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <p style={{ margin: 0, fontWeight: 500, fontSize: 14, color: hover ? "#fff" : "var(--gray-900)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{a.title}</p>
+                <p style={{ margin: "2px 0 0", fontSize: 12, color: hover ? "var(--blue-100)" : "var(--gray-400)" }}>{a.author.nickname} · {a.createdAt.slice(0, 10)}</p>
+              </div>
+              <div style={{ display: "flex", alignItems: "center", gap: 12, marginLeft: 16, flexShrink: 0 }}>
+                <span style={{ fontSize: 12, color: hover ? "var(--blue-100)" : "var(--gray-400)" }}>{a.articleStatus}</span>
+                {loggedIn && a.author.nickname === "보통사람" && (
+                  <span style={{ fontSize: 12, padding: "6px 12px", borderRadius: 8, border: `1px solid ${hover ? "#fff" : "var(--gray-200)"}`, color: hover ? "#fff" : "var(--gray-700)" }}>편집</span>
+                )}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+      <div style={{ display: "flex", justifyContent: "center", gap: 4, marginTop: 24 }}>
+        {[1, 2].map((p) => (
+          <button key={p} style={{
+            width: 36, height: 36, borderRadius: 8, fontSize: 14, fontWeight: 500, cursor: "pointer",
+            border: p === 1 ? "none" : "1px solid var(--gray-200)",
+            background: p === 1 ? "var(--blue-600)" : "#fff",
+            color: p === 1 ? "#fff" : "var(--gray-600)",
+          }}>{p}</button>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function CommentForm({ compact, parentReply, onCancel }) {
+  return (
+    <div style={{ marginTop: compact ? 8 : 16, display: "flex", flexDirection: "column", gap: 8 }}>
+      <div style={{ display: "flex", gap: 8 }}>
+        <input placeholder="작성자" style={{ flex: 1, border: "1px solid var(--gray-200)", borderRadius: 8, padding: "8px 12px", fontSize: 14, outline: "none", fontFamily: "var(--font-sans)" }} />
+        <input placeholder="비밀번호" type="password" style={{ width: 144, border: "1px solid var(--gray-200)", borderRadius: 8, padding: "8px 12px", fontSize: 14, outline: "none", fontFamily: "var(--font-sans)" }} />
+      </div>
+      <textarea placeholder={parentReply ? "대댓글을 입력하세요" : "댓글을 입력하세요"} rows={compact ? 2 : 3}
+        style={{ width: "100%", border: "1px solid var(--gray-200)", borderRadius: 8, padding: "8px 12px", fontSize: 14, resize: "none", outline: "none", fontFamily: "var(--font-sans)", boxSizing: "border-box" }} />
+      <div style={{ display: "flex", gap: 8, justifyContent: "flex-end" }}>
+        {onCancel && <button onClick={onCancel} style={{ fontSize: 14, padding: "6px 12px", border: "1px solid var(--gray-200)", borderRadius: 8, background: "#fff", cursor: "pointer" }}>취소</button>}
+        <button style={{ fontSize: 14, padding: "6px 12px", background: "var(--blue-600)", color: "#fff", border: "none", borderRadius: 8, cursor: "pointer" }}>{parentReply ? "답글 등록" : "댓글 등록"}</button>
+      </div>
+    </div>
+  );
+}
+
+function CommentItem({ comment, isReply }) {
+  const [showReply, setShowReply] = React.useState(false);
+  if (comment.deleted && (!comment.replies || comment.replies.length === 0)) return null;
+  return (
+    <div style={{ marginLeft: isReply ? 32 : 0, paddingLeft: isReply ? 16 : 0, borderLeft: isReply ? "2px solid var(--blue-50)" : "none" }}>
+      <div style={{ padding: "12px 0" }}>
+        {comment.deleted ? (
+          <p style={{ fontSize: 14, color: "var(--gray-300)", fontStyle: "italic", margin: 0 }}>[삭제된 댓글입니다]</p>
+        ) : (
+          <>
+            <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
+              <span style={{ fontSize: 14, fontWeight: 500, color: "var(--gray-700)" }}>{comment.createdBy}</span>
+              <span style={{ fontSize: 12, color: "var(--gray-400)" }}>{comment.createdAt.slice(0, 16).replace("T", " ")}</span>
+            </div>
+            <p style={{ fontSize: 14, color: "var(--gray-800)", margin: 0, whiteSpace: "pre-wrap" }}>{comment.comment}</p>
+            <div style={{ display: "flex", gap: 12, marginTop: 6 }}>
+              {!isReply && <span onClick={() => setShowReply(!showReply)} style={{ fontSize: 12, color: "var(--gray-400)", cursor: "pointer" }}>{showReply ? "취소" : "답글"}</span>}
+              <span style={{ fontSize: 12, color: "var(--gray-400)", cursor: "pointer" }}>수정</span>
+              <span style={{ fontSize: 12, color: "var(--gray-400)", cursor: "pointer" }}>삭제</span>
+            </div>
+          </>
+        )}
+      </div>
+      {comment.replies?.map((r) => <CommentItem key={r.id} comment={r} isReply />)}
+      {showReply && (
+        <div style={{ marginLeft: 32, paddingLeft: 16, borderLeft: "2px solid var(--blue-50)" }}>
+          <CommentForm compact parentReply onCancel={() => setShowReply(false)} />
+        </div>
+      )}
+    </div>
+  );
+}
+
+function ArticleDetail({ onBack }) {
+  const [liked, setLiked] = React.useState(false);
+  const a = ARTICLE_DETAIL;
+  const totalCount = COMMENTS.reduce((sum, c) => sum + 1 + (c.replies?.length ?? 0), 0);
+
+  return (
+    <div style={{ fontFamily: "var(--font-sans)" }}>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 24 }}>
+        <span onClick={onBack} style={{ fontSize: 14, color: "var(--gray-400)", cursor: "pointer" }}>← 목록으로</span>
+        <span style={{ fontSize: 14, padding: "6px 12px", border: "1px solid var(--gray-200)", borderRadius: 8, cursor: "pointer" }}>편집</span>
+      </div>
+
+      <h1 style={{ fontSize: 24, fontWeight: 700, color: "var(--gray-900)", margin: "0 0 12px" }}>{a.title}</h1>
+      <div style={{ display: "flex", alignItems: "center", gap: 12, fontSize: 14, color: "var(--gray-400)", marginBottom: 24, paddingBottom: 24, borderBottom: "1px solid var(--gray-200)" }}>
+        <span>{a.author.nickname}</span><span>·</span><span>{a.createdAt.slice(0, 10)}</span>
+        <span style={{ marginLeft: "auto", fontSize: 12, background: "var(--gray-100)", color: "var(--gray-500)", padding: "2px 8px", borderRadius: 4 }}>{a.articleStatus}</span>
+      </div>
+
+      <div style={{ color: "var(--gray-800)", lineHeight: 1.7, whiteSpace: "pre-wrap", minHeight: 120, fontSize: 14 }}>{a.contents}</div>
+
+      <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginTop: 32, paddingTop: 24, borderTop: "1px solid var(--gray-200)" }}>
+        {a.tagList.map((t) => (
+          <span key={t} style={{ fontSize: 12, background: "var(--blue-50)", color: "var(--blue-600)", padding: "4px 10px", borderRadius: 9999 }}>#{t}</span>
+        ))}
+      </div>
+
+      <div style={{ marginTop: 40, paddingTop: 32, borderTop: "1px solid var(--gray-200)" }}>
+        <h2 style={{ fontSize: 16, fontWeight: 600, color: "var(--gray-700)", marginBottom: 16 }}>
+          댓글 {totalCount > 0 && <span style={{ color: "var(--blue-600)" }}>{totalCount}</span>}
+        </h2>
+        <div>
+          {COMMENTS.map((c, i) => (
+            <div key={c.id} style={{ borderTop: i === 0 ? "none" : "1px solid var(--gray-200)" }}>
+              <CommentItem comment={c} />
+            </div>
+          ))}
+        </div>
+        <div style={{ marginTop: 24, paddingTop: 16, borderTop: "1px solid var(--gray-200)" }}>
+          <CommentForm />
+        </div>
+      </div>
+
+      <div style={{ marginTop: 32, paddingTop: 24, borderTop: "1px solid var(--gray-200)" }}>
+        <button
+          onClick={() => setLiked(true)}
+          disabled={liked}
+          style={{
+            display: "flex", alignItems: "center", gap: 6, fontSize: 14, padding: "8px 16px",
+            border: `1px solid ${liked ? "var(--red-100)" : "var(--gray-200)"}`, borderRadius: 8,
+            background: liked ? "var(--red-50)" : "#fff", color: liked ? "var(--red-500)" : "var(--gray-700)",
+            cursor: liked ? "default" : "pointer",
+          }}
+        >
+          ♥ {liked ? "좋아요 완료" : "좋아요"}
+        </button>
+      </div>
+    </div>
+  );
+}
+
+function FormInput({ label, type = "text", placeholder, error, helper }) {
+  return (
+    <div>
+      <label style={{ display: "block", fontSize: 14, fontWeight: 500, color: "var(--gray-700)", marginBottom: 6 }}>{label}</label>
+      <input type={type} placeholder={placeholder} style={{
+        width: "100%", border: `1px solid ${error ? "var(--red-400)" : "var(--gray-200)"}`, borderRadius: 8,
+        padding: "10px 12px", fontSize: 14, outline: "none", boxSizing: "border-box", fontFamily: "var(--font-sans)",
+      }} />
+      {error ? <p style={{ fontSize: 12, color: "var(--red-500)", margin: "4px 0 0" }}>{error}</p>
+        : helper && <p style={{ fontSize: 12, color: "var(--gray-400)", margin: "4px 0 0" }}>{helper}</p>}
+    </div>
+  );
+}
+
+function LoginPage({ onSubmit, onGoRegister }) {
+  return (
+    <div style={{ maxWidth: 384, margin: "64px auto 0", fontFamily: "var(--font-sans)" }}>
+      <h1 style={{ fontSize: 24, fontWeight: 700, textAlign: "center", marginBottom: 32 }}>로그인</h1>
+      <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+        <FormInput label="아이디" />
+        <FormInput label="비밀번호" type="password" />
+        <button onClick={onSubmit} style={{ width: "100%", padding: "10px 0", background: "var(--blue-600)", color: "#fff", fontSize: 14, fontWeight: 500, border: "none", borderRadius: 8, cursor: "pointer" }}>로그인</button>
+      </div>
+      <p style={{ marginTop: 24, textAlign: "center", fontSize: 14, color: "var(--gray-400)" }}>
+        계정이 없으신가요? <span onClick={onGoRegister} style={{ color: "var(--blue-600)", cursor: "pointer" }}>회원가입</span>
+      </p>
+    </div>
+  );
+}
+
+function RegisterPage({ onSubmit, onGoLogin }) {
+  return (
+    <div style={{ maxWidth: 384, margin: "64px auto 0", fontFamily: "var(--font-sans)" }}>
+      <h1 style={{ fontSize: 24, fontWeight: 700, textAlign: "center", marginBottom: 32 }}>회원가입</h1>
+      <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+        <FormInput label="아이디" placeholder="영문 소문자 시작, 4~15자" helper="영문 소문자·숫자·_·-·. 허용, 입력 시 자동으로 소문자 변환" />
+        <FormInput label="비밀번호" type="password" placeholder="4~20자, 2종류 이상 혼합" helper="대·소문자·숫자·특수문자 중 2종류 이상 혼합 필수" />
+        <FormInput label="비밀번호 확인" type="password" placeholder="비밀번호를 다시 입력해주세요" />
+        <FormInput label="닉네임" />
+        <button onClick={onSubmit} style={{ width: "100%", padding: "10px 0", background: "var(--blue-600)", color: "#fff", fontSize: 14, fontWeight: 500, border: "none", borderRadius: 8, cursor: "pointer" }}>회원가입</button>
+      </div>
+      <p style={{ marginTop: 24, textAlign: "center", fontSize: 14, color: "var(--gray-400)" }}>
+        이미 계정이 있으신가요? <span onClick={onGoLogin} style={{ color: "var(--blue-600)", cursor: "pointer" }}>로그인</span>
+      </p>
+    </div>
+  );
+}
+
+function App() {
+  const [page, setPage] = React.useState("boards");
+  const [boardId, setBoardId] = React.useState(null);
+  const [loggedIn, setLoggedIn] = React.useState(false);
+
+  return (
+    <div>
+      <Header page={page} setPage={setPage} loggedIn={loggedIn} setLoggedIn={setLoggedIn} />
+      <main style={{ maxWidth: 768, margin: "0 auto", padding: "32px 16px" }}>
+        {page === "boards" && (
+          <BoardList onOpenBoard={(id) => { setBoardId(id); setPage("board"); }} />
+        )}
+        {page === "board" && (
+          <BoardDetail
+            boardId={boardId}
+            loggedIn={loggedIn}
+            onBack={() => setPage("boards")}
+            onOpenArticle={() => setPage("article")}
+            onWrite={() => (loggedIn ? null : setPage("login"))}
+          />
+        )}
+        {page === "article" && (
+          <ArticleDetail onBack={() => setPage("board")} />
+        )}
+        {page === "login" && (
+          <LoginPage onSubmit={() => { setLoggedIn(true); setPage("boards"); }} onGoRegister={() => setPage("register")} />
+        )}
+        {page === "register" && (
+          <RegisterPage onSubmit={() => { setLoggedIn(true); setPage("boards"); }} onGoLogin={() => setPage("login")} />
+        )}
+        {page === "portfolio" && (
+          <p style={{ color: "var(--gray-400)", fontFamily: "var(--font-sans)", padding: "40px 0", textAlign: "center" }}>
+            포트폴리오 UI 킷은 ui_kits/portfolio/ 를 참고하세요.
+          </p>
+        )}
+      </main>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(React.createElement(App));
+</script>
+<script>
+  var src = document.getElementById('app-src').textContent;
+  var out = Babel.transform(src, { presets: [['react', { runtime: 'classic' }]] }).code;
+  (0, eval)(out);
+</script>
+</body>
+</html>

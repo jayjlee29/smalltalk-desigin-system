@@ -1,0 +1,20 @@
+<!-- @dsCard group="Components" viewport="700x110" name="Pagination" -->
+<link rel="stylesheet" href="../../styles.css">
+<script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<script src="../../_ds_bundle.js"></script>
+<div id="root" style="padding:20px;background:#fff;font-family:var(--font-sans)"></div>
+<script type="text/plain" id="app-src">
+  const { Pagination } = window.SmalltalkDS;
+  function Demo() {
+    const [page, setPage] = React.useState(2);
+    return <Pagination page={page} totalPages={5} onChange={setPage} />;
+  }
+  ReactDOM.createRoot(document.getElementById("root")).render(React.createElement(Demo));
+</script>
+<script>
+  var src = document.getElementById('app-src').textContent;
+  var out = Babel.transform(src, { presets: [['react', { runtime: 'classic' }]] }).code;
+  (0, eval)(out);
+</script>

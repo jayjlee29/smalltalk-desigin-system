@@ -1,0 +1,4 @@
+/* Geist + Geist Mono — loaded from Google Fonts.
+   (The original codebase self-hosts these via next/font/google; for a portable
+   design system we load the same families from the Google Fonts CDN instead.) */
+@import url('https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap');

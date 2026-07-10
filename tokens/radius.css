@@ -1,0 +1,14 @@
+/* Smalltalk Community — radius & elevation tokens */
+
+:root {
+  --radius-default: 4px;   /* rounded */
+  --radius-md: 6px;        /* rounded-md */
+  --radius-lg: 8px;        /* rounded-lg — buttons, inputs, list containers (most common) */
+  --radius-xl: 12px;       /* rounded-xl — elevated cards (portfolio summary, account cards) */
+  --radius-full: 9999px;   /* rounded-full — pills, status badges, pagination buttons */
+
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);   /* hover:shadow-sm on account cards */
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1); /* toasts */
+
+  --transition-default: 150ms cubic-bezier(0.4, 0, 0.2, 1); /* Tailwind's bare "transition" class */
+}
