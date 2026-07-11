@@ -1,5 +1,7 @@
 import React from "react";
 
+// 접근성: label을 htmlFor/id로 input과 연결하고, label이 없으면 placeholder를
+// aria-label로 사용. 에러는 aria-invalid + aria-describedby로 알린다.
 export function Input({
   type = "text",
   placeholder,
@@ -12,20 +14,27 @@ export function Input({
   compact = false,
 }) {
   const [focused, setFocused] = React.useState(false);
+  const id = React.useId();
+  const errId = error ? `${id}-err` : undefined;
   return (
     <div style={{ fontFamily: "var(--font-sans)" }}>
       {label && (
-        <label style={{ display: "block", fontSize: 14, fontWeight: 500, color: "var(--gray-700)", marginBottom: 6 }}>
+        <label htmlFor={id} style={{ display: "block", fontSize: 14, fontWeight: 500, color: "var(--gray-700)", marginBottom: 6 }}>
           {label}
         </label>
       )}
       <input
+        id={id}
         type={type}
         placeholder={placeholder}
         value={value}
         onChange={onChange}
         autoComplete={autoComplete}
         required={required}
+        aria-label={!label ? placeholder : undefined}
+        aria-required={required || undefined}
+        aria-invalid={error ? true : undefined}
+        aria-describedby={errId}
         onFocus={() => setFocused(true)}
         onBlur={() => setFocused(false)}
         style={{
@@ -42,7 +51,7 @@ export function Input({
         }}
       />
       {error && (
-        <p style={{ fontSize: 12, color: "var(--red-500)", marginTop: 4 }}>{error}</p>
+        <p id={errId} style={{ fontSize: 12, color: "var(--red-500)", marginTop: 4 }}>{error}</p>
       )}
     </div>
   );

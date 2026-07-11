@@ -1,4 +1,4 @@
-Generic data table matching the portfolio holdings table's structure: `rounded-xl` border, `gray-50` header row, right-aligned numeric columns with `mono` tabular figures, `hover` row tint, last row border removed.
+포트폴리오 보유 종목 테이블 구조를 따르는 범용 데이터 테이블: `rounded-xl` 테두리, `gray-50` 헤더 행, `mono` 고정폭 숫자를 쓰는 우측 정렬 숫자 열, `hover` 행 틴트, 마지막 행 테두리 제거.
 
 ```jsx
 <Table

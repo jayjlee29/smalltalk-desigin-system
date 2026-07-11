@@ -1,9 +1,9 @@
 ---
 name: smalltalk-community-design
-description: Use this skill to generate well-branded interfaces and assets for Smalltalk Community (Korean community-board + stock-portfolio web app), either for production or throwaway prototypes/mocks/etc. Contains essential design guidelines, colors, type, fonts, assets, and UI kit components for prototyping.
+description: Smalltalk Community(한국어 커뮤니티 게시판 + 주식 포트폴리오 웹앱)를 위한 브랜드에 맞는 인터페이스와 에셋을 만들 때 이 스킬을 사용하세요 — 프로덕션용이든 일회성 프로토타입/목업 등이든. 프로토타이핑에 필요한 핵심 디자인 가이드라인, 색상, 타입, 폰트, 에셋, UI 킷 컴포넌트를 담고 있습니다.
 user-invocable: true
 ---
 
-Read the README.md file within this skill, and explore the other available files.
-If creating visual artifacts (slides, mocks, throwaway prototypes, etc), copy assets out and create static HTML files for the user to view. If working on production code, you can copy assets and read the rules here to become an expert in designing with this brand.
-If the user invokes this skill without any other guidance, ask them what they want to build or design, ask some questions, and act as an expert designer who outputs HTML artifacts _or_ production code, depending on the need.
+이 스킬 안의 README.md 파일을 읽고, 다른 파일들도 탐색하세요.
+시각 산출물(슬라이드, 목업, 일회성 프로토타입 등)을 만들 때는 에셋을 복사해 나가서 사용자가 볼 수 있는 정적 HTML 파일을 만드세요. 프로덕션 코드를 작업할 때는 에셋을 복사하고 여기의 규칙을 읽어 이 브랜드로 디자인하는 전문가가 될 수 있습니다.
+사용자가 별다른 안내 없이 이 스킬을 호출하면, 무엇을 만들거나 디자인하고 싶은지 물어보고, 몇 가지 질문을 한 뒤, 필요에 따라 HTML 산출물 _또는_ 프로덕션 코드를 내놓는 전문 디자이너로서 행동하세요.
