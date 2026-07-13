@@ -17,10 +17,11 @@ export function ToastProvider({ children }) {
   return (
     <ToastContext.Provider value={{ addToast }}>
       {children}
-      <div style={{ position: "fixed", bottom: 16, right: 16, zIndex: 50, display: "flex", flexDirection: "column", gap: 8, maxWidth: 384, width: "100%", pointerEvents: "none" }}>
+      <div role="region" aria-label="알림" aria-live="polite" style={{ position: "fixed", bottom: 16, right: 16, zIndex: 50, display: "flex", flexDirection: "column", gap: 8, maxWidth: 384, width: "100%", pointerEvents: "none" }}>
         {toasts.map((t) => (
           <div
             key={t.id}
+            role={t.type === "error" ? "alert" : "status"}
             style={{
               fontFamily: "var(--font-sans)",
               padding: "12px 16px",

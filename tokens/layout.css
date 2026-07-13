@@ -1,0 +1,45 @@
+/* Smalltalk — 반응형 레이아웃 구조 클래스 (n-screen / 모바일 웹 대응).
+   레이아웃 컴포넌트(Grid/Split/SidebarLayout/Header)는 열 구조를 CSS 커스텀
+   속성으로 넘기고, 아래 미디어 쿼리가 작은 화면에서 단일 열로 접습니다.
+   인라인 스타일은 @media를 쓸 수 없으므로 반응형에 민감한 속성만 여기로 분리.
+   브레이크포인트: 640px(레이아웃 스택), 520px(그리드). */
+
+.ds-grid {
+  display: grid;
+  grid-template-columns: var(--ds-grid-cols, repeat(2, minmax(0, 1fr)));
+  gap: var(--ds-grid-gap, 16px);
+  align-items: start;
+}
+
+.ds-split {
+  display: grid;
+  grid-template-columns: var(--ds-split-cols, 1fr 1fr);
+  gap: var(--ds-split-gap, 20px);
+  align-items: start;
+}
+
+.ds-sidebar-layout {
+  display: grid;
+  grid-template-columns: var(--ds-sidebar-w, 220px) minmax(0, 1fr);
+  gap: 24px;
+  align-items: start;
+}
+.ds-sidebar-layout__aside { position: sticky; top: 16px; }
+.ds-sidebar-layout__nav { display: flex; flex-direction: column; gap: 2px; }
+
+.ds-header__inner { display: flex; align-items: center; gap: 24px; }
+.ds-header__nav { display: flex; gap: 16px; flex: 1; min-width: 0; overflow-x: auto; }
+
+/* ── 태블릿/모바일: 다단 레이아웃을 단일 열로 접기 ── */
+@media (max-width: 640px) {
+  .ds-split { grid-template-columns: 1fr; }
+  .ds-sidebar-layout { grid-template-columns: 1fr; gap: 16px; }
+  .ds-sidebar-layout__aside { position: static; }
+  .ds-sidebar-layout__nav { flex-direction: row; flex-wrap: wrap; }
+  .ds-header__inner { gap: 12px; }
+}
+
+/* ── 좁은 모바일: 그리드도 1열 ── */
+@media (max-width: 520px) {
+  .ds-grid { grid-template-columns: 1fr; }
+}

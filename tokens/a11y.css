@@ -1,0 +1,27 @@
+/* Smalltalk — 접근성(a11y) 보조 스타일.
+   인라인 스타일로는 :focus-visible을 쓸 수 없어, 커스텀 컨트롤의 키보드 포커스
+   링을 여기서 정의한다.
+   - .ds-focus            : 커스텀 버튼/링크(Switch·Tabs·Pagination·Sidebar·닫기/제거 버튼 등)
+   - .ds-check-input + .ds-check-box / .ds-radio-box
+                          : 시각적으로 숨긴 checkbox/radio input에 키보드 포커스 시
+                            시각 박스에 링 (input이 박스 바로 앞에 와야 인접 선택자 동작)
+   흰색 안쪽 링 + blue-500 바깥 링이라 파란 배경 위에서도 보인다. */
+
+.ds-focus:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--white), 0 0 0 4px var(--blue-500);
+}
+.ds-check-input:focus-visible + .ds-check-box,
+.ds-check-input:focus-visible + .ds-radio-box {
+  box-shadow: 0 0 0 2px var(--white), 0 0 0 4px var(--blue-500);
+}
+
+/* 모션 최소화 선호 사용자: 전환/애니메이션 사실상 제거 */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+  }
+}

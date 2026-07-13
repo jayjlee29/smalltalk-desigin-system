@@ -1,8 +1,8 @@
-Text/password field used in login, register, and comment forms.
+로그인·회원가입·댓글 폼에서 쓰이는 텍스트/비밀번호 입력 필드.
 
 ```jsx
 <Input label="아이디" placeholder="영문 소문자 시작, 4~15자" />
 <Input label="비밀번호" type="password" error="비밀번호가 일치하지 않습니다" />
 ```
 
-Focus state is a 2px blue-500 ring (not just a border color change). Error state switches border to red-400 and shows a 12px red message below. `compact` shrinks padding for inline contexts (comment reply forms).
+포커스 상태는 단순한 테두리 색 변경이 아니라 2px blue-500 링입니다. 에러 상태에서는 테두리가 red-400으로 바뀌고 아래에 12px 빨간 메시지를 표시합니다. `compact`는 인라인 상황(댓글 답글 폼)을 위해 패딩을 줄입니다.
