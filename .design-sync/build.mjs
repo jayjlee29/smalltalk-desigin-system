@@ -111,6 +111,7 @@ const COMPONENTS = [
   C('Split', 'layout', { viewport: '660x180', rootStyle: `${DEFAULT_ROOT};background:var(--gray-50)` }),
   C('SidebarLayout', 'layout', { viewport: '760x300', rootStyle: `${DEFAULT_ROOT};background:var(--gray-50)` }),
   C('Footer', 'layout', { viewport: '760x160' }),
+  C('AppShell', 'layout', { viewport: '900x620', rootStyle: 'background:var(--gray-50)' }),
 ];
 
 // Demos for components with no repo .card.html — render the REAL exported
@@ -521,6 +522,27 @@ function Demo(){
 }
 ReactDOM.createRoot(document.getElementById("root")).render(React.createElement(Demo));`,
 
+  AppShell: `
+const { AppShell, Header, SidebarLayout, PageHeader, Footer, Button, Badge } = window.SmalltalkDS;
+function Row(p){ return <div style={{padding:"12px 4px",borderBottom:"1px solid var(--gray-200)",fontSize:14,color:"var(--gray-900)"}}>{p.children}</div>; }
+function Demo(){
+  const [tab,setTab]=React.useState("free");
+  return (
+    <AppShell
+      header={<Header brand="Smalltalk Community" links={[{label:"게시판",href:"#",active:true},{label:"포트폴리오",href:"#"}]} right={<Button variant="ghost" size="sm">로그인</Button>} />}
+      footer={<Footer links={[{label:"이용약관",href:"#"},{label:"개인정보처리방침",href:"#"}]} note="© 2026 Smalltalk Community." />}
+    >
+      <SidebarLayout title="게시판" nav={[{label:"자유게시판",active:true,count:128},{label:"질문게시판",count:42},{label:"정보게시판",count:17}]}>
+        <PageHeader title="자유게시판" subtitle="자유롭게 이야기를 나누는 공간" actions={<Button variant="primary" size="sm">글쓰기</Button>} />
+        <Row><Badge tone="blue">인기</Badge> 오늘 장 마감 후기 공유합니다</Row>
+        <Row>초보 질문 있습니다</Row>
+        <Row>주말에 다들 뭐 하세요?</Row>
+      </SidebarLayout>
+    </AppShell>
+  );
+}
+ReactDOM.createRoot(document.getElementById("root")).render(React.createElement(Demo));`,
+
   BarChart: `
 const { BarChart } = window.SmalltalkDS;
 function Demo(){
@@ -715,9 +737,9 @@ ReactDOM.createRoot(document.getElementById("root")).render(React.createElement(
 // ── 화면: full-screen templates composed from the DS components ──
 const SCREENS = [
   {
-    file: 'community', title: '커뮤니티 게시판 (사이드바)', uses: 'Header · SidebarLayout · Split · Section · Stack · PageHeader · Tabs · Badge · Tag · Avatar · Pagination · Footer',
+    file: 'board-list', title: '게시판 목록 (board-list)', uses: 'AppShell · Header · SidebarLayout · Split · Section · Stack · PageHeader · Tabs · Badge · Tag · Avatar · Pagination · Footer',
     demo: `
-const { Header, SidebarLayout, Split, Section, Stack, PageHeader, Tabs, Badge, Tag, Avatar, Button, Pagination, Footer } = window.SmalltalkDS;
+const { AppShell, Header, SidebarLayout, Split, Section, Stack, PageHeader, Tabs, Badge, Tag, Avatar, Button, Pagination, Footer } = window.SmalltalkDS;
 function Row(p){
   return (
     <div style={{padding:"12px 4px",borderBottom:"1px solid var(--gray-200)"}}>
@@ -761,16 +783,14 @@ function Demo(){
     </Stack>
   );
   return (
-    <div style={{background:"var(--gray-50)",minHeight:"100vh"}}>
-      <Header brand="Smalltalk Community" links={[{label:"게시판",href:"#",active:true},{label:"포트폴리오",href:"#"}]}
-        right={<Button variant="ghost" size="sm">로그인</Button>} />
-      <div style={{maxWidth:1120,margin:"0 auto",padding:"20px 16px"}}>
-        <SidebarLayout title="게시판" nav={[{label:"자유게시판",active:true,count:128},{label:"질문게시판",count:42},{label:"정보게시판",count:17},{label:"공지사항",count:5}]}>
-          <Split ratio="1fr 280px" left={posts} right={widgets} />
-        </SidebarLayout>
-        <Footer links={[{label:"이용약관",href:"#"},{label:"개인정보처리방침",href:"#"},{label:"문의",href:"#"}]} note="© 2026 Smalltalk Community." />
-      </div>
-    </div>
+    <AppShell
+      header={<Header brand="Smalltalk Community" links={[{label:"게시판",href:"#",active:true},{label:"포트폴리오",href:"#"}]} right={<Button variant="ghost" size="sm">로그인</Button>} />}
+      footer={<Footer links={[{label:"이용약관",href:"#"},{label:"개인정보처리방침",href:"#"},{label:"문의",href:"#"}]} note="© 2026 Smalltalk Community." />}
+    >
+      <SidebarLayout title="게시판" nav={[{label:"자유게시판",active:true,count:128},{label:"질문게시판",count:42},{label:"정보게시판",count:17},{label:"공지사항",count:5}]}>
+        <Split ratio="1fr 280px" left={posts} right={widgets} />
+      </SidebarLayout>
+    </AppShell>
   );
 }
 ReactDOM.createRoot(document.getElementById("root")).render(React.createElement(Demo));`,

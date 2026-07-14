@@ -124,6 +124,20 @@ import해서 조합하는 첫 컴포넌트** — `PostEditor.jsx`가 `./Input.js
 export해도 esbuild가 의존 컴포넌트를 함께 번들). 태그 추가는 Input에 onKeyDown이 없어
 래퍼 div의 keydown으로 처리. `default*` prop으로 초기값(수정 화면).
 
+### 레이아웃 패턴 정식화: AppShell + Footer/SidebarLayout 정렬 (2026-07-14)
+
+board-list(구 community) 화면에서 검증된 레이아웃 패턴을 컴포넌트/문서에 반영(총 **41개**):
+- **Footer** — 좌우 패딩 내장(`clamp(16px,4vw,--space-10)`) + 세로 `--space-6`, marginTop `--space-8`.
+  Container 없이 전체 폭에 놓아도 콘텐츠가 화면 끝에 안 붙음. `maxWidth` prop 추가(본문과 좌우 정렬).
+- **SidebarLayout** — 상단 정렬 기본값: aside 상단 패딩(`--space-3`)과 본문 wrapper `paddingTop`
+  (`--space-3`)을 맞춰, 본문 첫 요소가 `PageHeader`면 사이드바 헤더와 타이틀 상단이 자동 정렬
+  (수동 margin-top 보정 불필요). **PageHeader** 타이틀 top-padding 0으로 변경.
+- **AppShell**(신규, layout) — Header + 콘텐츠(+SidebarLayout) + Footer 표준 셸. 기본값 내장:
+  콘텐츠 세로 `--space-8`, 가로 `clamp(16px,4vw,--space-10)`, 블록 gap `--space-6`, maxWidth 1120,
+  배경 gray-50. footer는 padded 본문 밖(전체 폭)에 렌더. 문서: AppShell.prompt.md + SidebarLayout.prompt.md.
+- 화면 `community`→`board-list`로 정식화, AppShell 사용하도록 리팩터. 렌더 검증 완료(사이드바
+  헤더↔타이틀 정렬, Footer 전체폭+여백). dashboard/analytics/login/register는 기존 조합 유지(정상).
+
 ### 쇼케이스 탭 개선 (2026-07-13)
 
 "예제 · 화면" 탭을 **쇼케이스**로 개명하고 컴포넌트 탭 수준으로 강화(모두 로컬):
