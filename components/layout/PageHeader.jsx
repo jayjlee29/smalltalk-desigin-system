@@ -9,7 +9,7 @@ export function PageHeader({ title, subtitle, actions }) {
         alignItems: "flex-start",
         gap: 16,
         fontFamily: "var(--font-sans)",
-        padding: "4px 0 16px",
+        padding: "0 0 var(--space-4)",
       }}
     >
       <div style={{ minWidth: 0 }}>

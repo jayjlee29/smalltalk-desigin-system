@@ -10,6 +10,8 @@ export interface FooterProps {
   brand?: string;
   links?: FooterLink[];
   note?: React.ReactNode;
+  /** 지정 시 내부 콘텐츠를 이 폭으로 중앙 정렬(본문과 좌우 정렬 맞춤). 미지정 시 좌우 clamp 패딩만. */
+  maxWidth?: number;
 }
 
 export declare function Footer(props: FooterProps): JSX.Element;
